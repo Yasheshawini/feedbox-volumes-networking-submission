@@ -3,6 +3,10 @@ services:
     image: postgres:15
     env_file:
       - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - database_network
 
   api:
     build: .
@@ -12,6 +16,9 @@ services:
       - .env
     depends_on:
       - db
+    networks:
+      - web_network
+      - database_network
 
   web:
     build: ./client
@@ -19,3 +26,14 @@ services:
       - "3000:80"
     depends_on:
       - api
+    networks:
+      - web_network
+
+volumes:
+  postgres_data:
+
+networks:
+  web_network:
+    driver: bridge
+  database_network:
+    driver: bridge
